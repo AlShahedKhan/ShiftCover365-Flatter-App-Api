@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('subscriptions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('plan_id')->constrained()->onDelete('cascade');
             $table->string('type');
             $table->string('stripe_id')->unique();
             $table->string('stripe_status');

@@ -14,17 +14,27 @@ class User extends Authenticatable implements JWTSubject
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, Billable;
 
-    const ROLE_USER = 'user';
-    const ROLE_ADMIN = 'admin';
+    const ROLE_PROFESSIONAL = 'professional';
+    const ROLE_MANAGER = 'manager';
 
     protected $fillable = [
-        'first_name',
-        'last_name',
+        'name',
         'email',
         'password',
         'role',
+        'office_id'
     ];
 
+
+    public function office()
+    {
+        return $this->belongsTo(Office::class);
+    }
+
+    public function subscription()
+    {
+        return $this->hasOne(Subscription::class);
+    }
 
     protected $hidden = [
         'password',
