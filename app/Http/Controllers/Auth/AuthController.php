@@ -169,6 +169,8 @@ class AuthController extends Controller
                 ]);
 
                 return response()->json([
+                    'success' => true,
+                    'status_code' => 201,
                     'message' => 'Registration successful',
                     'user' => $user->load('subscription.plan'),
                     'access_token' => $token,
@@ -185,6 +187,8 @@ class AuthController extends Controller
                 }
 
                 return response()->json([
+                    'success' => false,
+                    'status_code' => 500,
                     'error' => 'Registration failed: ' . $e->getMessage()
                 ], 500);
             }
