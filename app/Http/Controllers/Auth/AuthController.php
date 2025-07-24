@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -70,25 +71,18 @@ class AuthController extends Controller
                     ]);
 
                     try {
-                        // Create Stripe Customer
                         $user->createOrGetStripeCustomer();
 
-                        // Create the subscription with the correct price ID
                         $stripeSubscription = $user->newSubscription('default', $plan->stripe_price_id)
                             ->create($request->payment_method_id);
 
-                        // After subscription is created, update the payment method as default
                         $user->updateDefaultPaymentMethod($request->payment_method_id);
 
-                        // Create the local subscription with plan_id
-                        $subscription = $user->subscriptions()->create([
-                            'type' => 'default',
-                            'plan_id' => $plan->id,
-                            'stripe_id' => $stripeSubscription->id,
-                            'stripe_status' => $stripeSubscription->status,
-                            'stripe_price' => $plan->stripe_price_id,
-                            'quantity' => 1
+                        $user->subscriptions()->where('stripe_id', $stripeSubscription->id)->update([
+                            'plan_id' => $plan->id
                         ]);
+
+                        $subscription = $user->subscriptions()->where('stripe_id', $stripeSubscription->id)->first();
 
                         Log::channel('single')->info('Stripe subscription created', [
                             'user_id' => $user->id,
@@ -104,20 +98,21 @@ class AuthController extends Controller
                         throw new \Exception('Payment processing failed: ' . $e->getMessage());
                     }
                 } else {
-                    // Handle free plan
+                    // FREE plan logic
                     $subscription = $user->subscriptions()->create([
                         'type' => 'default',
                         'plan_id' => $plan->id,
                         'stripe_status' => 'active',
-                        'quantity' => 1
+                        'quantity' => 1,
+                        'stripe_id' => 'free_' . \Str::uuid(), // Ensure unique value
+                    ]);
+
+                    Log::channel('single')->info('Free plan subscription created', [
+                        'user_id' => $user->id,
+                        'plan_id' => $plan->id,
+                        'subscription_id' => $subscription->id
                     ]);
                 }
-
-                Log::channel('single')->info('Subscription created for manager', [
-                    'user_id' => $user->id,
-                    'plan_id' => $plan->id,
-                    'subscription_id' => $subscription->id
-                ]);
             }
 
             $token = $user->createToken('auth_token')->plainTextToken;
@@ -138,7 +133,6 @@ class AuthController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
 
-            // If user was created but subscription failed, ensure it's deleted
             if (isset($user)) {
                 $user->delete();
             }
@@ -148,4 +142,5 @@ class AuthController extends Controller
             ], 500);
         }
     }
+
 }
