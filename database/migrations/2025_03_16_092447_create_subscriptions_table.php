@@ -18,7 +18,8 @@ return new class extends Migration
             $table->string('type');
             $table->string('stripe_id', 191)->unique();
             $table->string('stripe_status');
-            $table->string('stripe_price')->nullable();
+            $table->string('stripe_price_id', 191)->nullable(); // আমাদের custom field
+            $table->string('stripe_price', 191)->nullable(); // Laravel Cashier এর জন্য required
             $table->integer('quantity')->nullable();
             $table->timestamp('trial_ends_at')->nullable();
             $table->timestamp('ends_at')->nullable();

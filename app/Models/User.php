@@ -2,46 +2,44 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Cashier\Billable;
-use Tymon\JWTAuth\Contracts\JWTSubject;
+use Tymon\JWTAuth\Contracts\JWTSubject; // JWT এর জন্য
+use Laravel\Cashier\Billable; // যদি Stripe ব্যবহার করেন
 
-class User extends Authenticatable implements JWTSubject
+class User extends Authenticatable implements JWTSubject // JWTSubject implement করুন
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, Billable;
+    use HasFactory, Notifiable, Billable; // HasApiTokens remove করুন
 
-    const ROLE_PROFESSIONAL = 'professional';
-    const ROLE_MANAGER = 'manager';
-
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'name',
         'email',
         'password',
         'role',
-        'office_id'
+        'office_id',
     ];
 
-
-    public function office()
-    {
-        return $this->belongsTo(Office::class);
-    }
-
-    public function subscription()
-    {
-        return $this->hasOne(Subscription::class);
-    }
-
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [
@@ -50,21 +48,39 @@ class User extends Authenticatable implements JWTSubject
         ];
     }
 
+    /**
+     * Get the user's subscription.
+     */
+    public function subscription()
+    {
+        return $this->hasOne(Subscription::class);
+    }
+
+    /**
+     * Get the user's office.
+     */
+    public function office()
+    {
+        return $this->belongsTo(Office::class);
+    }
+
+    /**
+     * Get the identifier that will be stored in the subject claim of the JWT.
+     *
+     * @return mixed
+     */
     public function getJWTIdentifier()
     {
         return $this->getKey();
     }
 
+    /**
+     * Return a key value array, containing any custom claims to be added to the JWT.
+     *
+     * @return array
+     */
     public function getJWTCustomClaims()
     {
         return [];
-    }
-
-    public function isAdmin(): bool
-    {
-        // If you use a 'role' column
-        return $this->role === self::ROLE_ADMIN;
-        // If you use a boolean 'is_admin' column, use:
-        // return (bool) $this->is_admin;
     }
 }
