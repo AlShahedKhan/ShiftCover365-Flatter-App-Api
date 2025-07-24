@@ -30,6 +30,18 @@ class RegisterUserJob implements ShouldQueue
                 'password' => Hash::make($this->userData['password']),
                 'role' => $this->userData['role'] ?? 'user'
             ]);
+
+            // Create subscription if plan_id is provided
+            if (!empty($this->userData['plan_id'])) {
+                $user->subscription()->create([
+                    'plan_id' => $this->userData['plan_id'],
+                    'type' => $this->userData['type'] ?? 'default',
+                    'stripe_id' => $this->userData['stripe_id'] ?? uniqid('sub_'),
+                    'stripe_status' => $this->userData['stripe_status'] ?? 'active',
+                    'stripe_price' => $this->userData['stripe_price'] ?? null,
+                    'quantity' => $this->userData['quantity'] ?? 1,
+                ]);
+            }
             Mail::to($user->email)->queue(new WelcomeUserMail(
                 firstName: $user->first_name,
                 lastName: $user->last_name,

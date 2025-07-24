@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('plan_id')->nullable()->constrained()->onDelete('cascade');
             $table->string('type');
-            $table->string('stripe_id')->unique();
+            $table->string('stripe_id', 191)->unique();
             $table->string('stripe_status');
             $table->string('stripe_price')->nullable();
             $table->integer('quantity')->nullable();
