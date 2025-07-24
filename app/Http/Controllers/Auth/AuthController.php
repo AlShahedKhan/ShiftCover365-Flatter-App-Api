@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Models\User;
 use App\Models\Plan;
+use App\Models\User;
+use Illuminate\Support\Str;
 use App\Models\Subscription;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -40,17 +41,55 @@ class AuthController extends Controller
                     return response()->json(['errors' => $validator->errors()], 422);
                 }
 
-                    try {
+                $user = User::create([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
+                    'role' => $request->role,
+                    'office_id' => $request->office_id
+                ]);
+
+                Log::channel('single')->info('User created successfully', [
+                    'user_id' => $user->id,
+                    'email' => $user->email
+                ]);
+
+                $subscription = null;
+
+                if ($request->role === 'manager') {
+                    $plan = Plan::findOrFail($request->subscription['plan_id']);
+
+                    if ($plan->price > 0) {
+                        if (empty($plan->stripe_price_id)) {
+                            throw new \Exception('Stripe price ID not configured for this plan.');
+                        }
+
+                        if (empty($request->payment_method_id)) {
+                            throw new \Exception('Payment method is required for paid plans.');
+                        }
+
+                        Log::channel('single')->info('Creating Stripe subscription', [
+                            'user_id' => $user->id,
+                            'plan_id' => $plan->id,
+                            'stripe_price_id' => $plan->stripe_price_id
+                        ]);
+
                         $user->createOrGetStripeCustomer();
 
                         $stripeSubscription = $user->newSubscription('default', $plan->stripe_price_id)
+                            ->skipTrial()
+                            ->noProrate()
                             ->create($request->payment_method_id);
 
                         $user->updateDefaultPaymentMethod($request->payment_method_id);
 
-                        $user->subscriptions()->where('stripe_id', $stripeSubscription->id)->update([
-                            'plan_id' => $plan->id
-                        ]);
+                        // Update the Cashier-created subscription with our custom fields
+                        $user->subscriptions()
+                            ->where('stripe_id', $stripeSubscription->id)
+                            ->update([
+                                'plan_id' => $plan->id,
+                                'stripe_price' => $plan->stripe_price_id,
+                            ]);
 
                         $subscription = $user->subscriptions()->where('stripe_id', $stripeSubscription->id)->first();
 
@@ -59,51 +98,56 @@ class AuthController extends Controller
                             'plan_id' => $plan->id,
                             'subscription_id' => $subscription->id
                         ]);
+                    } else {
+                        // FREE plan logic
+                        $subscription = $user->subscriptions()->create([
+                            'type' => 'default',
+                            'plan_id' => $plan->id,
+                            'stripe_status' => 'active',
+                            'quantity' => 1,
+                            'stripe_id' => 'free_' . Str::uuid(), // Ensure unique value
+                        ]);
+
+                        Log::channel('single')->info('Free plan subscription created', [
+                            'user_id' => $user->id,
+                            'plan_id' => $plan->id,
+                            'subscription_id' => $subscription->id
+                        ]);
                     }
                 } else {
-                    // FREE plan logic
-                    $subscription = $user->subscriptions()->create([
-                        'type' => 'default',
-                        'plan_id' => $plan->id,
-                        'stripe_status' => 'active',
-                        'quantity' => 1,
-                        'stripe_id' => 'free_' . \Str::uuid(), // Ensure unique value
-                    ]);
-
-                    Log::channel('single')->info('Free plan subscription created', [
-                        'user_id' => $user->id,
-                        'plan_id' => $plan->id,
-                        'subscription_id' => $subscription->id
+                    // For professional users, no subscription handling is required during registration
+                    Log::channel('single')->info('Professional user registered without subscription', [
+                        'user_id' => $user->id
                     ]);
                 }
+
+                $token = $user->createToken('auth_token')->plainTextToken;
+
+                Log::channel('single')->info('Registration completed successfully', [
+                    'user_id' => $user->id,
+                    'role' => $user->role
+                ]);
+
+                return response()->json([
+                    'message' => 'Registration successful',
+                    'user' => $user->load('subscription.plan'),
+                    'token' => $token
+                ], 201);
+            } catch (\Exception $e) {
+                Log::channel('single')->error('Registration failed', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+
+                if (isset($user)) {
+                    $user->delete();
+                }
+
+                return response()->json([
+                    'error' => 'Registration failed: ' . $e->getMessage()
+                ], 500);
             }
-
-            $token = $user->createToken('auth_token')->plainTextToken;
-
-            Log::channel('single')->info('Registration completed successfully', [
-                'user_id' => $user->id,
-                'role' => $user->role
-            ]);
-
-            return response()->json([
-                'message' => 'Registration successful',
-                'user' => $user->load('subscription.plan'),
-                'token' => $token
-            ], 201);
-        } catch (\Exception $e) {
-            Log::channel('single')->error('Registration failed', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-
-            if (isset($user)) {
-                $user->delete();
-            }
-
-            return response()->json([
-                'error' => 'Registration failed: ' . $e->getMessage()
-            ], 500);
-        }
+        });
     }
 
 }
