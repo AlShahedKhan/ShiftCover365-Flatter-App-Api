@@ -1,11 +1,12 @@
 <?php
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -35,3 +36,9 @@ Route::match(['post', 'put', 'patch', 'HEAD', 'OPTIONS'], 'blogs/{id?}', [BlogCo
 
 // Office Routes
 Route::apiResource('offices', OfficeController::class);
+
+
+Route::get('/test-log', function () {
+    Log::info('Test log entry');
+    return 'Log test completed';
+});
