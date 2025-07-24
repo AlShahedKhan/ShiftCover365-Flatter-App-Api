@@ -12,10 +12,12 @@ class OfficeFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->company,
-            'address' => $this->faker->address,
-            'phone' => $this->faker->phoneNumber,
-            'email' => $this->faker->unique()->companyEmail,
+            'company_name'    => $this->faker->company,
+            'branch_name'     => $this->faker->city,
+            'experience'      => $this->faker->numberBetween(1, 10) . ' years',
+            'employee_id'     => $this->faker->unique()->numerify('EMP###'),
+            'smart_id_image'  => $this->faker->imageUrl(640, 480, 'business', true),
         ];
     }
 }
+ 

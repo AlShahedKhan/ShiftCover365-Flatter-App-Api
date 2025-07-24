@@ -32,5 +32,5 @@ Route::apiResource('offices', OfficeController::class);
 // User Routes
 Route::middleware(['auth:api'])->group(function () {
     Route::get('/user', [UserController::class, 'getUser']);
-    Route::post('/user-update', [UserController::class, 'updateUser']);
+    Route::post('/user-update', [UserController::class, 'saveUserAndOffice']);
 });

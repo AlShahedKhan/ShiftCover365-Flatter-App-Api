@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('offices', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('address')->nullable();
-            $table->string('phone')->nullable();
-            $table->string('email')->nullable();
+            $table->string('company_name');
+            $table->string('branch_name')->nullable();
+            $table->string('experience')->nullable();
+            $table->string('employee_id')->nullable();
+            $table->boolean('has_smart_id')->default(false);
+            $table->string('smart_id_image')->nullable();
             $table->timestamps();
         });
     }

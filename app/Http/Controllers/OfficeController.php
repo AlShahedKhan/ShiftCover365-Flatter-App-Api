@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Office;
 use Illuminate\Http\Request;
 use App\Http\Resources\OfficeResource;
-use App\Http\Requests\StoreOfficeRequest;
-use App\Http\Requests\UpdateOfficeRequest;
 
 class OfficeController extends Controller
 {
@@ -19,10 +17,11 @@ class OfficeController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'address' => 'nullable|string|max:255',
-            'phone' => 'nullable|string|max:20',
-            'email' => 'nullable|email|max:255',
+            'company_name'    => 'required|string|max:255',
+            'branch_name'     => 'nullable|string|max:255',
+            'experience'      => 'nullable|string|max:255',
+            'employee_id'     => 'nullable|string|max:50',
+            'smart_id_image'  => 'nullable|string|max:255', // Optional: adjust if file upload
         ]);
 
         $office = Office::create($validated);
@@ -37,10 +36,11 @@ class OfficeController extends Controller
     public function update(Request $request, Office $office)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'address' => 'nullable|string|max:255',
-            'phone' => 'nullable|string|max:20',
-            'email' => 'nullable|email|max:255',
+            'company_name'    => 'required|string|max:255',
+            'branch_name'     => 'nullable|string|max:255',
+            'experience'      => 'nullable|string|max:255',
+            'employee_id'     => 'nullable|string|max:50',
+            'smart_id_image'  => 'nullable|string|max:255',
         ]);
 
         $office->update($validated);

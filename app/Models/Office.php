@@ -10,9 +10,11 @@ class Office extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
-        'address',
-        'phone',
-        'email',
+        'company_name',
+        'branch_name',
+        'experience',
+        'employee_id',
+        'smart_id_image',
+        'has_smart_id',
     ];
 }
