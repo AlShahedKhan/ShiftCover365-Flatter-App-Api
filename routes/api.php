@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Auth\AuthController;
@@ -29,8 +30,10 @@ Route::get('/plans/{plan}', [PlanController::class, 'show']);
 // Office Routes
 Route::apiResource('offices', OfficeController::class);
 
-// User Routes
+// Shift Routes
+
 Route::middleware(['auth:api'])->group(function () {
     Route::get('/user', [UserController::class, 'getUser']);
     Route::post('/user-update', [UserController::class, 'saveUserAndOffice']);
 });
+Route::apiResource('shifts', ShiftController::class);

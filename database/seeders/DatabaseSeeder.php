@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             PlanSeeder::class,
             OfficeSeeder::class,
+            ShiftTypesTableSeeder::class,
         ]);
     }
 }
