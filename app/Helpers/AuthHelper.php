@@ -13,6 +13,7 @@ class AuthHelper
             abort(403, 'Forbidden: You are not authorized to perform this action.');
         }
     }
+    // check admin
     public static function checkAdmin()
     {
         $user = Auth::user();
