@@ -28,12 +28,13 @@ Route::get('/plans', [PlanController::class, 'index']);
 Route::get('/plans/{plan}', [PlanController::class, 'show']);
 
 // Office Routes
-Route::apiResource('offices', OfficeController::class);
 
 // Shift Routes
 
 Route::middleware(['auth:api'])->group(function () {
     Route::get('/user', [UserController::class, 'getUser']);
     Route::post('/user-update', [UserController::class, 'saveUserAndOffice']);
+    Route::apiResource('offices', OfficeController::class);
+    Route::get('/my-shift-count', [ShiftController::class, 'myShiftCount']);
 });
 Route::apiResource('shifts', ShiftController::class);

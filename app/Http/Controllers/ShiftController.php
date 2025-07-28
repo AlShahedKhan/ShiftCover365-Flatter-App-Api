@@ -16,10 +16,6 @@ class ShiftController extends Controller
         AuthHelper::checkUser();
 
         $userId = Auth::id();
-
-        \Log::info('Authenticated user ID: ' . $userId);
-        \Log::info('All shifts: ', Shift::select('id', 'user_id')->get()->toArray());
-
         $shifts = Shift::with(['office', 'shiftType'])->get();
 
 
@@ -29,7 +25,6 @@ class ShiftController extends Controller
     }
 
 
-    // POST /api/shifts
     public function store(Request $request)
     {
         AuthHelper::checkUser();
@@ -99,6 +94,20 @@ class ShiftController extends Controller
             'shift' => $shift
         ], 'Shift deleted successfully', 200);
     }
+
+    public function myShiftCount()
+    {
+        AuthHelper::checkUser();
+
+        $userId = Auth::id();
+
+        $count = Shift::where('user_id', $userId)->count();
+
+        return ResponseHelper::success([
+            'shift_count' => $count
+        ], 'Total shifts posted by the user', 200);
+    }
+
 
     // Authorization helper
     protected function authorizeOwner(Shift $shift)
