@@ -21,6 +21,18 @@ return new class extends Migration
             $table->string('password');
             $table->string('role')->default('professional');
             $table->foreignId('office_id')->constrained('offices');
+            $table->boolean('agreement_signed')->default(false);
+            $table->text('signature')->nullable();
+            $table->boolean('profile_verified')->default(false);
+            $table->boolean('staff_code_verified')->default(false);
+            $table->string('staff_code_hash')->nullable();
+            $table->string('id_document')->nullable();
+            $table->string('company')->nullable();
+            $table->string('branch')->nullable();
+            $table->string('experience')->nullable();
+            $table->string('location')->nullable();
+            $table->string('employee_id')->nullable();
+            $table->boolean('has_smart_id')->default(false);
             $table->rememberToken();
             $table->timestamps();
         });

@@ -34,7 +34,12 @@ Route::get('/plans/{plan}', [PlanController::class, 'show']);
 Route::middleware(['auth:api'])->group(function () {
     Route::get('/user', [UserController::class, 'getUser']);
     Route::post('/user-update', [UserController::class, 'saveUserAndOffice']);
-    Route::apiResource('offices', OfficeController::class);
-    Route::get('/my-shift-count', [ShiftController::class, 'myShiftCount']);
+
+    // Verification API
+    Route::get('/verification/status', [\App\Http\Controllers\VerificationController::class, 'status']);
+    Route::post('/verification/profile', [\App\Http\Controllers\VerificationController::class, 'saveProfile']);
+    Route::get('/verification/agreement', [\App\Http\Controllers\VerificationController::class, 'getAgreement']);
+    Route::post('/verification/agreement/sign', [\App\Http\Controllers\VerificationController::class, 'signAgreement']);
+    Route::post('/verification/staff-code', [\App\Http\Controllers\VerificationController::class, 'validateStaffCode']);
 });
 Route::apiResource('shifts', ShiftController::class);

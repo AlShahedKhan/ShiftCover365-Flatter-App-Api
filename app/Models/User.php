@@ -22,8 +22,20 @@ class User extends Authenticatable implements JWTSubject // JWTSubject implement
         'email',
         'password',
         'present_address',
-        'profile_image',   // ← add this
+        'profile_image',
         'office_id',
+        'agreement_signed',
+        'signature',
+        'profile_verified',
+        'staff_code_verified',
+        'staff_code_hash',
+        'id_document',
+        'company',
+        'branch',
+        'experience',
+        'location',
+        'employee_id',
+        'has_smart_id',
     ];
 
     /**
