@@ -43,7 +43,11 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/verification/staff-code', [\App\Http\Controllers\VerificationController::class, 'validateStaffCode']);
 
     // Consent Routes
+    Route::get('/consent/terms', [\App\Http\Controllers\ConsentController::class, 'getConsentTerms']);
     Route::post('/consent/give', [\App\Http\Controllers\ConsentController::class, 'giveConsent']);
     Route::get('/consent/status', [\App\Http\Controllers\ConsentController::class, 'getConsentStatus']);
+
+    // Professional: View all shifts
+    Route::get('/shifts/all', [\App\Http\Controllers\ShiftController::class, 'allShiftsForProfessionals']);
 });
 Route::apiResource('shifts', ShiftController::class);

@@ -108,6 +108,22 @@ class ShiftController extends Controller
         ], 'Total shifts posted by the user', 200);
     }
 
+    /**
+     * List all shifts for professional users
+     */
+    public function allShiftsForProfessionals(Request $request)
+    {
+        AuthHelper::checkUser();
+        $user = Auth::user();
+        if ($user->role !== 'professional') {
+            return ResponseHelper::error('Only professionals can view all shifts', 403);
+        }
+        $shifts = Shift::with(['office', 'shiftType'])->get();
+        return ResponseHelper::success([
+            'shifts' => $shifts
+        ], 'All shifts for professionals', 200);
+    }
+
 
     // Authorization helper
     protected function authorizeOwner(Shift $shift)
