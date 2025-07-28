@@ -26,4 +26,9 @@ class Shift extends Model
     {
         return $this->belongsTo(ShiftTypes::class);
     }
+
+    public function applications()
+    {
+        return $this->hasMany(ShiftApplication::class);
+    }
 }

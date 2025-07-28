@@ -124,6 +124,53 @@ class ShiftController extends Controller
         ], 'All shifts for professionals', 200);
     }
 
+    /**
+     * Professional applies for a shift
+     */
+    public function applyForShift(Request $request, $shiftId)
+    {
+        AuthHelper::checkUser();
+        $user = Auth::user();
+        if ($user->role !== 'professional') {
+            return ResponseHelper::error('Only professionals can apply for shifts', 403);
+        }
+        $shift = Shift::findOrFail($shiftId);
+        // Prevent duplicate application
+        $existing = $shift->applications()->where('user_id', $user->id)->first();
+        if ($existing) {
+            return ResponseHelper::error('You have already applied for this shift', 409);
+        }
+        $application = $shift->applications()->create([
+            'user_id' => $user->id,
+            'status' => 'applied',
+        ]);
+        return ResponseHelper::success([
+            'application' => $application
+        ], 'Applied for shift successfully', 201);
+    }
+
+    /**
+     * Search for shifts (location, date, department)
+     */
+    public function search(Request $request)
+    {
+        AuthHelper::checkUser();
+        $query = Shift::query();
+        if ($request->filled('location')) {
+            $query->where('location', 'like', '%' . $request->location . '%');
+        }
+        if ($request->filled('department')) {
+            $query->where('department', 'like', '%' . $request->department . '%');
+        }
+        if ($request->filled('date')) {
+            // Assuming you have a date field or can filter by start_time
+            $query->whereDate('created_at', $request->date);
+        }
+        $shifts = $query->with(['office', 'shiftType'])->get();
+        return ResponseHelper::success([
+            'shifts' => $shifts
+        ], 'Shifts search results', 200);
+    }
 
     // Authorization helper
     protected function authorizeOwner(Shift $shift)

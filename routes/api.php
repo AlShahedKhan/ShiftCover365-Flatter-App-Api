@@ -49,5 +49,9 @@ Route::middleware(['auth:api'])->group(function () {
 
     // Professional: View all shifts
     Route::get('/shifts/all', [\App\Http\Controllers\ShiftController::class, 'allShiftsForProfessionals']);
+    // Professional: Apply for a shift
+    Route::post('/shifts/{shift}/apply', [\App\Http\Controllers\ShiftController::class, 'applyForShift']);
+    // Professional: Search for shifts
+    Route::get('/shifts/search', [\App\Http\Controllers\ShiftController::class, 'search']);
 });
 Route::apiResource('shifts', ShiftController::class);
