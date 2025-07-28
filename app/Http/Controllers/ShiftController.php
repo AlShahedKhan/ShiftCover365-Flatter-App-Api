@@ -188,6 +188,27 @@ class ShiftController extends Controller
         ], 'Shift retrieved successfully', 200);
     }
 
+    /**
+     * Manager: View all applications for shifts they created
+     */
+    public function applicationsForMyShifts()
+    {
+        AuthHelper::checkUser();
+        $user = Auth::user();
+        if ($user->role !== 'manager') {
+            return ResponseHelper::error('Only managers can view applications for their shifts', 403);
+        }
+        // Get all shifts created by this manager
+        $shiftIds = \App\Models\Shift::where('user_id', $user->id)->pluck('id');
+        // Get all applications for these shifts, with professional user info and shift info
+        $applications = \App\Models\ShiftApplication::with(['user', 'shift.office', 'shift.shiftType'])
+            ->whereIn('shift_id', $shiftIds)
+            ->get();
+        return ResponseHelper::success([
+            'applications' => $applications
+        ], 'Applications for your shifts', 200);
+    }
+
     // Authorization helper
     protected function authorizeOwner(Shift $shift)
     {
