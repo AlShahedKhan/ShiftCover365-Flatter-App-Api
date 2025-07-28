@@ -20,13 +20,27 @@ class ConsentController extends Controller
         AuthHelper::checkUser();
 
         $validated = $request->validate([
-            'consent_given' => 'required|boolean|accepted'
+            'consent_given' => 'required'
         ]);
+
+        // Convert string to boolean if needed
+        $consentGiven = filter_var($request->consent_given, FILTER_VALIDATE_BOOLEAN);
+
+        if (!$consentGiven) {
+            return response()->json([
+                'success' => false,
+                'status_code' => 422,
+                'message' => 'Consent must be given to proceed',
+                'errors' => [
+                    'consent_given' => ['Consent must be given to proceed']
+                ]
+            ], 422);
+        }
 
         $user = Auth::user();
 
         // Create or update consent record
-        Consent::updateOrCreate(
+        $consent = Consent::updateOrCreate(
             ['user_id' => $user->id],
             ['consent_given' => true]
         );
@@ -39,10 +53,14 @@ class ConsentController extends Controller
             'status_code' => 200,
             'message' => 'Consent given successfully',
             'user' => $user,
-            'access_token' => null,
-            'token_type' => 'Bearer'
+            'consent_status' => [
+                'user_id' => $consent->user_id,
+                'consent_given' => $consent->consent_given,
+                'updated_at' => $consent->updated_at
+            ]
         ], 200);
     }
+
 
     /**
      * Get user's consent status
