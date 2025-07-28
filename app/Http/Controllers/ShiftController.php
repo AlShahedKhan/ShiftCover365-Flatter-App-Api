@@ -172,6 +172,22 @@ class ShiftController extends Controller
         ], 'Shifts search results', 200);
     }
 
+    /**
+     * Show a single shift for professionals
+     */
+    public function showForProfessional($shiftId)
+    {
+        AuthHelper::checkUser();
+        $user = Auth::user();
+        if ($user->role !== 'professional') {
+            return ResponseHelper::error('Only professionals can view this shift', 403);
+        }
+        $shift = Shift::with(['office', 'shiftType'])->findOrFail($shiftId);
+        return ResponseHelper::success([
+            'shift' => $shift
+        ], 'Shift retrieved successfully', 200);
+    }
+
     // Authorization helper
     protected function authorizeOwner(Shift $shift)
     {
