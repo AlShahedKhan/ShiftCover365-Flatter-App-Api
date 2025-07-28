@@ -41,5 +41,9 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('/verification/agreement', [\App\Http\Controllers\VerificationController::class, 'getAgreement']);
     Route::post('/verification/agreement/sign', [\App\Http\Controllers\VerificationController::class, 'signAgreement']);
     Route::post('/verification/staff-code', [\App\Http\Controllers\VerificationController::class, 'validateStaffCode']);
+
+    // Consent Routes
+    Route::post('/consent/give', [\App\Http\Controllers\ConsentController::class, 'giveConsent']);
+    Route::get('/consent/status', [\App\Http\Controllers\ConsentController::class, 'getConsentStatus']);
 });
 Route::apiResource('shifts', ShiftController::class);

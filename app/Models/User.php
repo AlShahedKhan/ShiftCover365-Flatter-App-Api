@@ -78,6 +78,14 @@ class User extends Authenticatable implements JWTSubject // JWTSubject implement
     }
 
     /**
+     * Get the user's consent.
+     */
+    public function consent()
+    {
+        return $this->hasOne(Consent::class);
+    }
+
+    /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
      * @return mixed
