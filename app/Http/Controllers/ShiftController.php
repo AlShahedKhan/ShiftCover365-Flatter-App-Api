@@ -142,11 +142,36 @@ class ShiftController extends Controller
         }
         $application = $shift->applications()->create([
             'user_id' => $user->id,
-            'status' => 'applied',
+            'status' => 'new',
         ]);
         return ResponseHelper::success([
             'application' => $application
         ], 'Applied for shift successfully', 201);
+    }
+
+    /**
+     * Manager: Accept or reject a shift application
+     */
+    public function updateApplicationStatus(Request $request, $applicationId)
+    {
+        AuthHelper::checkUser();
+        $user = Auth::user();
+        if ($user->role !== 'manager') {
+            return ResponseHelper::error('Only managers can update application status', 403);
+        }
+        $request->validate([
+            'status' => 'required|in:accepted,rejected',
+        ]);
+        $application = \App\Models\ShiftApplication::findOrFail($applicationId);
+        // Ensure the manager owns the shift
+        if ($application->shift->user_id !== $user->id) {
+            return ResponseHelper::error('You do not have permission to update this application', 403);
+        }
+        $application->status = $request->status;
+        $application->save();
+        return ResponseHelper::success([
+            'application' => $application
+        ], 'Application status updated', 200);
     }
 
     /**

@@ -57,5 +57,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('/shifts/{shift}/view', [\App\Http\Controllers\ShiftController::class, 'showForProfessional']);
     // Manager: View all applications for their created shifts
     Route::get('/manager/applications', [\App\Http\Controllers\ShiftController::class, 'applicationsForMyShifts']);
+    // Manager: Accept or reject a shift application
+    Route::post('/manager/applications/{application}/status', [\App\Http\Controllers\ShiftController::class, 'updateApplicationStatus']);
 });
 Route::apiResource('shifts', ShiftController::class);
