@@ -20,7 +20,7 @@ class FeedbackRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_type' => 'required|string|in:Manager,Locum Worker,Admin,Other',
+            'user_type' => 'required|string',
             'overall_rating' => 'required|integer|min:1|max:5',
             'feature_used' => 'required|string|in:Shift Posting,Till Discrepancy Alerts,Digital Accountability Agreement,Shift Logs,Other',
             'suggestions' => 'nullable|string|max:1000',

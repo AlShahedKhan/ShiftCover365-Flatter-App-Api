@@ -11,16 +11,12 @@ use App\Helpers\ResponseHelper;
 class FacilityProfileController extends Controller
 {
     /**
-     * Get facility profile for manager
+     * Get facility profile for any authenticated user
      */
     public function getProfile()
     {
         AuthHelper::checkUser();
         $user = Auth::user();
-
-        if ($user->role !== 'manager') {
-            return ResponseHelper::error('Only managers can access facility profile', 403);
-        }
 
         return ResponseHelper::success([
             'profile' => [
@@ -44,16 +40,12 @@ class FacilityProfileController extends Controller
     }
 
     /**
-     * Update facility profile for manager
+     * Update facility profile for any authenticated user
      */
     public function updateProfile(Request $request)
     {
         AuthHelper::checkUser();
         $user = Auth::user();
-
-        if ($user->role !== 'manager') {
-            return ResponseHelper::error('Only managers can update facility profile', 403);
-        }
 
         $validated = $request->validate([
             'personal_details.name' => 'sometimes|string|max:255',

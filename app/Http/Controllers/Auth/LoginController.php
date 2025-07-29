@@ -26,7 +26,9 @@ class LoginController extends Controller
             ], 401);
         }
 
-        $user = Auth::user()->load('subscription.plan');
+        $user = Auth::user();
+
+        // No need to load subscription for login - both subscribed/unsubscribed users can login
 
         $payload = [
             'iss' => URL::secure('/'),
