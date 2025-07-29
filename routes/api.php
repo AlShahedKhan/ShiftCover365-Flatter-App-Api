@@ -8,6 +8,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\FaqController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
@@ -26,6 +27,9 @@ Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword'
 // Plan Routes
 Route::get('/plans', [PlanController::class, 'index']);
 Route::get('/plans/{plan}', [PlanController::class, 'show']);
+
+// FAQ Routes
+Route::apiResource('faqs', FaqController::class);
 
 // Office Routes
 
