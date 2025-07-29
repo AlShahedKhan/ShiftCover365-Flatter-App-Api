@@ -9,6 +9,8 @@ use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\FaqController;
+use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
@@ -33,6 +35,9 @@ Route::apiResource('faqs', FaqController::class);
 
 // Contact Routes
 Route::post('/contact', [ContactController::class, 'submit']);
+
+// Feedback Routes
+Route::post('/feedback', [FeedbackController::class, 'submit']);
 
 // Office Routes
 
@@ -72,5 +77,13 @@ Route::middleware(['auth:api'])->group(function () {
     // manager Profile Routes (Manager only)
     Route::get('/manager-profile', [\App\Http\Controllers\FacilityProfileController::class, 'getProfile']);
     Route::put('/manager-profile', [\App\Http\Controllers\FacilityProfileController::class, 'updateProfile']);
+
+    // Subscription Management Routes (Managers only)
+    Route::get('/subscription', [SubscriptionController::class, 'getCurrentSubscription']);
+    Route::put('/subscription', [SubscriptionController::class, 'updateSubscription']);
+    Route::put('/subscription/payment-method', [SubscriptionController::class, 'updatePaymentMethod']);
+    Route::get('/subscription/plans', [SubscriptionController::class, 'getAvailablePlans']);
+    Route::delete('/subscription', [SubscriptionController::class, 'cancelSubscription']);
+    Route::patch('/subscription/resume', [SubscriptionController::class, 'resumeSubscription']);
 });
 Route::apiResource('shifts', ShiftController::class);
