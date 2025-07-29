@@ -247,7 +247,7 @@ class SubscriptionController extends Controller
                 return ResponseHelper::error('No subscription found', 404);
             }
 
-            if (!$subscription->cancelled()) {
+            if (!$subscription->canceled()) {
                 return ResponseHelper::error('Subscription is not cancelled', 400);
             }
 

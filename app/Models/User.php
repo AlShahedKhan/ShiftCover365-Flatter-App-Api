@@ -68,14 +68,6 @@ class User extends Authenticatable implements JWTSubject // JWTSubject implement
     }
 
     /**
-     * Get the user's subscription.
-     */
-    public function subscription()
-    {
-        return $this->hasOne(Subscription::class);
-    }
-
-    /**
      * Get the user's office.
      */
     public function office()
