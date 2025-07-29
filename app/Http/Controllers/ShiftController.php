@@ -270,4 +270,48 @@ class ShiftController extends Controller
             abort(403, 'Forbidden: You do not own this shift.');
         }
     }
+
+    /**
+     * Start a shift (set actual start time)
+     */
+    public function startShift(Request $request, $shiftId)
+    {
+        AuthHelper::checkUser();
+        $user = Auth::user();
+        $shift = Shift::findOrFail($shiftId);
+        // Only assigned professional or owner can start
+        if ($shift->user_id !== $user->id) {
+            return ResponseHelper::error('You do not have permission to start this shift', 403);
+        }
+        $request->validate([
+            'start_time' => 'required|date_format:H:i',
+        ]);
+        $shift->start_time = $request->start_time;
+        $shift->save();
+        return ResponseHelper::success([
+            'shift' => $shift
+        ], 'Shift start time updated', 200);
+    }
+
+    /**
+     * End a shift (set actual end time)
+     */
+    public function endShift(Request $request, $shiftId)
+    {
+        AuthHelper::checkUser();
+        $user = Auth::user();
+        $shift = Shift::findOrFail($shiftId);
+        // Only assigned professional or owner can end
+        if ($shift->user_id !== $user->id) {
+            return ResponseHelper::error('You do not have permission to end this shift', 403);
+        }
+        $request->validate([
+            'end_time' => 'required|date_format:H:i|after:start_time',
+        ]);
+        $shift->end_time = $request->end_time;
+        $shift->save();
+        return ResponseHelper::success([
+            'shift' => $shift
+        ], 'Shift end time updated', 200);
+    }
 }

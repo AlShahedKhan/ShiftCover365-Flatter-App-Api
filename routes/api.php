@@ -16,6 +16,8 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\DiscrepancyController;
 
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [LoginController::class, 'login']);
@@ -56,6 +58,14 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/verification/staff-code', [\App\Http\Controllers\VerificationController::class, 'validateStaffCode']);
 
     // Consent Routes
+
+    // Shift Start/End Time and Midday Log Endpoints
+    Route::post('/shifts/{shift}/start', [ShiftController::class, 'startShift']);
+    Route::post('/shifts/{shift}/end', [ShiftController::class, 'endShift']);
+    Route::post('/shifts/{shift}/midday-log', [\App\Http\Controllers\ShiftMiddayLogController::class, 'store']);
+    Route::get('/shifts/{shift}/midday-logs', [\App\Http\Controllers\ShiftMiddayLogController::class, 'index']);
+
+    
     Route::get('/consent/terms', [\App\Http\Controllers\ConsentController::class, 'getConsentTerms']);
     Route::post('/consent/give', [\App\Http\Controllers\ConsentController::class, 'giveConsent']);
     Route::get('/consent/status', [\App\Http\Controllers\ConsentController::class, 'getConsentStatus']);
@@ -86,5 +96,10 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('/subscription/plans', [SubscriptionController::class, 'getAvailablePlans']);
     Route::delete('/subscription', [SubscriptionController::class, 'cancelSubscription']);
     Route::patch('/subscription/resume', [SubscriptionController::class, 'resumeSubscription']);
+
+    Route::post('/discrepancy/alert', [DiscrepancyController::class, 'alert']);
+    Route::post('/discrepancy/manual', [DiscrepancyController::class, 'manual']);
 });
 Route::apiResource('shifts', ShiftController::class);
+
+Route::post('/application/accept', [ApplicationController::class, 'accept']);
