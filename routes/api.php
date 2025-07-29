@@ -68,5 +68,9 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('/manager/applications', [\App\Http\Controllers\ShiftController::class, 'applicationsForMyShifts']);
     // Manager: Accept or reject a shift application
     Route::post('/manager/applications/{application}/status', [\App\Http\Controllers\ShiftController::class, 'updateApplicationStatus']);
+
+    // manager Profile Routes (Manager only)
+    Route::get('/manager-profile', [\App\Http\Controllers\FacilityProfileController::class, 'getProfile']);
+    Route::put('/manager-profile', [\App\Http\Controllers\FacilityProfileController::class, 'updateProfile']);
 });
 Route::apiResource('shifts', ShiftController::class);

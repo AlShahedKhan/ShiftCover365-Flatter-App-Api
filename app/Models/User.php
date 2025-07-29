@@ -37,6 +37,11 @@ class User extends Authenticatable implements JWTSubject // JWTSubject implement
         'location',
         'employee_id',
         'has_smart_id',
+        'designation',
+        'case_types',
+        'joining_date',
+        'work_location',
+        'employment_type',
     ];
 
     /**
