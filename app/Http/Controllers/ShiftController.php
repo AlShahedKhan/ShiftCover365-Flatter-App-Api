@@ -234,6 +234,35 @@ class ShiftController extends Controller
         ], 'Applications for your shifts', 200);
     }
 
+        /**
+     * Manager: Get shifts by specific date
+     */
+    public function getShiftsByDateForManagers($date)
+    {
+        AuthHelper::checkUser();
+        $user = Auth::user();
+
+        if ($user->role !== 'manager') {
+            return ResponseHelper::error('Only managers can view shifts by date', 403);
+        }
+
+        // Validate date format
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+            return ResponseHelper::error('Invalid date format. Use YYYY-MM-DD format', 400);
+        }
+
+        // Get shifts for the specific date (only shifts created by this manager)
+        $shifts = Shift::with(['office', 'shiftType'])
+            ->where('user_id', $user->id)
+            ->whereDate('created_at', $date)
+            ->get();
+
+        return ResponseHelper::success([
+            'shifts' => $shifts,
+            'date' => $date
+        ], 'Shifts for the specified date retrieved successfully', 200);
+    }
+
     // Authorization helper
     protected function authorizeOwner(Shift $shift)
     {
