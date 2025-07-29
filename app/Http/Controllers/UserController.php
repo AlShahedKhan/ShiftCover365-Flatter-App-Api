@@ -110,5 +110,28 @@ public function saveUserAndOffice(Request $request)
     }
 }
 
+    /**
+     * Delete the authenticated user's account
+     */
+    public function deleteAccount(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'status_code' => 401,
+                'message' => 'Unauthorized',
+            ], 401);
+        }
+        // Delete all shifts belonging to the user to avoid foreign key constraint errors
+        $user->shifts()->delete();
+        $user->delete();
+        return response()->json([
+            'success' => true,
+            'status_code' => 200,
+            'message' => 'Account deleted successfully.'
+        ], 200);
+    }
+
 
 }

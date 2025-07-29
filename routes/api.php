@@ -46,6 +46,7 @@ Route::post('/feedback', [FeedbackController::class, 'submit']);
 Route::middleware(['auth:api'])->group(function () {
     Route::get('/user', [UserController::class, 'getUser']);
     Route::post('/user-update', [UserController::class, 'saveUserAndOffice']);
+    Route::delete('/user', [UserController::class, 'deleteAccount']);
 
     // Verification API
     Route::get('/verification/status', [\App\Http\Controllers\VerificationController::class, 'status']);

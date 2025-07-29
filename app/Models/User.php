@@ -84,6 +84,14 @@ class User extends Authenticatable implements JWTSubject // JWTSubject implement
     }
 
     /**
+     * Get the shifts for the user.
+     */
+    public function shifts()
+    {
+        return $this->hasMany(Shift::class);
+    }
+
+    /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
      * @return mixed
