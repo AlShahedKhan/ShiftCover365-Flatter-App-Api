@@ -23,7 +23,7 @@ class SendContactEmail implements ShouldQueue
 
     public function handle(): void
     {
-        Mail::to(config('mail.from.address'))->queue(new ContactFormSubmitted(
+        Mail::to('alshahed.cse@gmail.com')->queue(new ContactFormSubmitted(
             $this->contact
         ));
     }

@@ -27,7 +27,7 @@ class ContactFormSubmitted extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Contact Form Submitted',
+            subject: 'Contact Form Submitted: ' . $this->contact->subject,
         );
     }
 
@@ -36,8 +36,6 @@ class ContactFormSubmitted extends Mailable
         return new Content(
             view: 'emails.contact.form-submitted',
             with: [
-                'name' => $this->contact->name,
-                'email' => $this->contact->email,
                 'subject' => $this->contact->subject,
                 'message_text' => $this->contact->message,
             ]

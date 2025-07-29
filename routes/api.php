@@ -31,6 +31,9 @@ Route::get('/plans/{plan}', [PlanController::class, 'show']);
 // FAQ Routes
 Route::apiResource('faqs', FaqController::class);
 
+// Contact Routes
+Route::post('/contact', [ContactController::class, 'submit']);
+
 // Office Routes
 
 // Shift Routes
