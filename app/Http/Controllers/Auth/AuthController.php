@@ -172,7 +172,9 @@ class AuthController extends Controller
                     'success' => true,
                     'status_code' => 201,
                     'message' => 'Registration successful',
-                    'user' => $user->load('subscription.plan'),
+                    'user' => $user->loadMissing(['office', 'subscriptions' => function($query) {
+                        $query->with('plan')->latest()->first();
+                    }]),
                     'access_token' => $token,
                     'token_type' => 'Bearer'
                 ], 201);
