@@ -40,7 +40,7 @@ class LoginController extends Controller
         ];
 
         $token = JWTAuth::claims($payload)->fromUser($user);
-        $cookie = cookie('auth_token', $token, 60, '/', null, true, true, false, 'Strict');
+        $cookie = cookie('auth_token', $token, 10080, '/', null, true, true, false, 'Strict');
 
         LoginUserJob::dispatch($user->id, now()->toDateTimeString());
 

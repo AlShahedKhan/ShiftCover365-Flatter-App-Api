@@ -22,7 +22,7 @@ class RegisterController extends Controller
                 'iss'     => URL::secure('/'),
             ];
             $token = JWTAuth::claims($payload)->fromUser($user);
-            $cookie = cookie('auth_token', $token, 60, '/', null, true, true, false, 'Strict');
+            $cookie = cookie('auth_token', $token, 10080, '/', null, true, true, false, 'Strict');
 
             return $this->successResponse('User registered successfully', [
                 'data' => $user,
